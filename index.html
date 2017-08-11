@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+  <title>Excel to JSON Conversion</title>
+  <script src="xlsx.full.min.js"></script>
+</head>
+<body>
+
+  <script>
+
+    /* set up XMLHttpRequest */
+    var input = "input1.xlsx";
+    var sheetCount = 4;
+
+    var objReq = new XMLHttpRequest();
+    objReq.open("GET", input, true);
+    objReq.responseType = "arraybuffer";
+
+    objReq.onload = function(e) {
+     for ( var sheetNo = 0; sheetNo < sheetCount; sheetNo++) {
+
+        var arraybuffer = objReq.response;
+        var data = new Uint8Array(arraybuffer);
+        var arr = new Array();
+          for(var i = 0; i != data.length; ++i)  {
+            arr[i] = String.fromCharCode(data[i]);
+          }
+        var bstr = arr.join("");
+        // to create a workbook for excel
+        var workbook = XLSX.read(bstr, {type:"binary"});
+        sheetName = workbook.SheetNames[sheetNo];
+        // to get the sheet name based on the index
+        var worksheet = workbook.Sheets[sheetName];
+        var Json=XLSX.utils.sheet_to_json(worksheet,{raw:true});
+        var str = JSON.stringify(Json);
+        //console.log(str);
+        document.writeln(str);
+
+  }
+}
+objReq.send();
+</script>
+</body>
+</html>
